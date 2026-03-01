@@ -144,7 +144,7 @@ class UIManager {
         });
     }
 
-    showHeroInventory(heroId) {
+showHeroInventory(heroId) {
     const hero = window.GameState.heroes.find(h => h.id === heroId);
 
     modalBody.innerHTML = `
