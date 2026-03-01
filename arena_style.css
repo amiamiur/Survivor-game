@@ -1,0 +1,105 @@
+/* ==============================
+   Survivors-style арена
+   ============================== */
+
+.arena-game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    position: relative;
+}
+
+.arena-header {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.arena-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    color: white;
+    font-size: 1.2rem;
+}
+
+#gameCanvas {
+    flex: 1;
+    width: 100%;
+    background: #1a1a2e;
+    display: block;
+    touch-action: none; /* Отключаем скролл на мобилках */
+}
+
+.joystick-container {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 120px;
+    height: 120px;
+    z-index: 200;
+    display: none; /* Показываем только на мобилках */
+}
+
+.joystick-base {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.joystick-thumb {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.pause-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #16213e;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.pause-menu h3 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.pause-menu button {
+    margin: 10px;
+    min-width: 150px;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .joystick-container {
+        display: block;
+    }
+    
+    .arena-stats {
+        font-size: 0.9rem;
+        gap: 10px;
+    }
+}
