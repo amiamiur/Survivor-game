@@ -6,7 +6,7 @@ class Hero {
     this.level = 1;
     this.exp = 0;
     this.expToNextLevel = 100; // опыт до следующего уровня
-    this.isUnlocked = true;
+    this.isUnlocked = true; // +++ ДОБАВЛЕНО: все герои по умолчанию разблокированы
 
     // Базовые характеристики (растут с уровнем)
       this.baseStats = {
@@ -31,6 +31,9 @@ class Hero {
   }
 
   addExp(amount) {
+    // Проверка: если герой не разблокирован, опыт не начисляем
+    if (!this.isUnlocked) return;
+    
     this.exp += amount;
     while (this.exp >= this.expToNextLevel) {
       this.levelUp();
@@ -56,20 +59,20 @@ class Hero {
   }
 
   updateCurrentStats(){
-      this.currentStats = { ...baseStats }
-;
+      this.currentStats = { ...this.baseStats };
+  }
+
+  addToInventory(item) {
+    // Проверка: если герой не разблокирован, предмет не добавляем
+    if (!this.isUnlocked) return false;
+    
+    const emptySlot = this.inventory.findIndex(slot => slot === null);
+    if (emptySlot !== -1) {
+      this.inventory[emptySlot] = item;
+      return true;
     }
-
-   addToInventory(item) {
-       const emptySlot = this.inventory.findIndex(slot => slot === null);
-       if (emptySlot !== -1) {
-           this.inventory[emptySlot] = item;
-           return true;
-       }
-       return false; // Инвентарь полон
-   }
-
-  
+    return false; // Инвентарь полон
+  }
 }
 
 window.Hero = Hero;
