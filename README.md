@@ -1,851 +1,279 @@
-[![Итерация 1 - Готова](https://img.shields.io/badge/Итерация_3-Магазин_и_Предметы-0081d1?style=for-the-badge)](##-итерация-1-скелет-и-навигация)
+<div align="center">
+    <img src="docs/logo/logo-2.gif" width="700" height="250" />
+</div>
+<br>
+<div align="center">
+      <h1>⚔️ Arena Survivors ⚔️</h1>
+      <p><strong>Пошаговое создание игры на чистом JavaScript</strong></p>
+      <p>Учебный проект по веб-разработке: от первого тега HTML до полноценного игрового цикла</p>
+    </div>
+  <br>
 
-> [!NOTE]
-> Обновлено 19.02.2026
+  [![Итерация 1 - Готова](https://img.shields.io/badge/Итерация_1-Скелет_и_Навигация-00ff88?style=for-the-badge)](##-итерация-1-скелет-и-навигация)
+  [![Итерация 2 - Готова](https://img.shields.io/badge/Итерация_2-Герои_и_Ресурсы-4caaff?style=for-the-badge)](##-итерация-2-герои-и-пассивная-генерация)
+  [![Итерация 3 - Готова](https://img.shields.io/badge/Итерация_3-Магазин_и_Предметы-aa4cff?style=for-the-badge)](##-итерация-3-магазин-и-покупка-предметов)
+  [![Итерация 4 - Готова](https://img.shields.io/badge/Итерация_4-Крафт_и_Рецепты-ffaa4c?style=for-the-badge)](##-итерация-4-крафт-и-рецепты)
+  [![Итерация 5 - Готова](https://img.shields.io/badge/Итерация_5-Арена_и_Враги-5e3830?style=for-the-badge)](##-итерация-5-арена-и-враги)
+  [![Итерация 6 - Готова](https://img.shields.io/badge/Итерация_6-Отладка_и_изображения-00e600?style=for-the-badge)](##-итерация-6-отладка-и-изображения)
+  [![Итерация 7 - Готова](https://img.shields.io/badge/Итерация_7-Рефакторинг_и_структурирование-4a4aff?style=for-the-badge)](##-итерация-7-рефакторинг-и-структурирование)
+</div>
 
 <br>
 
-> [!IMPORTANT]
-> Внимательно реализуем каждый класс и метод из руководства, важно ошибки фиксить сразу, что бы потом не запутаться.
+## 🎯 О проекте
 
-<br>
+**Arena Survivors** — это не просто игра. Это **интерактивный учебник** по веб-разработке, где каждый ученик становится полноценным разработчиком.
 
-> [!CAUTION]
-> Не выполненые самостоятельные задания, которые находятся в конце документа - это снижение бала за домашнее задание и возможное снижение итогового бала за зачет.
+Мы не пишем код вслепую. Мы создаём модульную, расширяемую игру шаг за шагом, изучая на практике:
+- **HTML/CSS** — адаптивная вёрстка без скроллов
+- **JavaScript (ES6+)** — классы, модули, паттерны
+- **ООП и SOLID** — единая ответственность, открытость/закрытость
+- **Архитектуру** — разделение на ядро, UI и состояние
+- **Командную работу** — Git, код-ревью, задачи
 
-
-# 🛡️ Arena Survivors v0.0.3: Добавляем систему предметов и магазин
-
-Привет, команда! Во второй версии у нас появились настоящие герои с инвентарём. Теперь мы добавим **предметы и магазин**:
-
-**Что нового:**
-- Система классов предметов (оружие, броня, расходники, материалы)
-- Магазин с ежедневным ассортиментом
-- Возможность покупать предметы за провизию
-- Использование расходников в инвентаре
-
-**Важно:** Мы не переписываем игру, а **добавляем новые файлы и методы** в существующий код. Каждый шаг — это конкретное место, куда нужно вставить код.
+> 💡 **Главное правило**: игра работает с первого дня. Каждая итерация добавляет новый функционал, не ломая старый.
 
 ---
 
-## 📁 Создаём новый файл `js/core/Item.js`
+## 🏗️ Архитектура (с первого взгляда)
 
-Это полностью новый файл. Создайте его в папке `core/`. Здесь будут жить все классы предметов.
+Всё, что нам нужно, умещается в одну схему:
 
-### Шаг 1.1. Базовый класс Item (вставьте целиком)
-
-```javascript
-// ==============================
-// Базовый класс предмета
-// ==============================
-class Item {
-    /**
-     * Создаёт новый предмет
-     * @param {string} id - Уникальный идентификатор
-     * @param {string} name - Название предмета
-     * @param {string} type - Тип ('weapon', 'armor', 'consumable', 'material')
-     * @param {string} rarity - Редкость ('common', 'rare', 'epic', 'legendary')
-     * @param {number} basePrice - Базовая цена в провизии
-     * @param {string} icon - Иконка предмета (эмодзи)
-     */
-    constructor(id, name, type, rarity, basePrice, icon = '📦') {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.rarity = rarity;
-        this.basePrice = basePrice;
-        this.icon = icon;
-        this.description = ''; // Будет заполняться в дочерних классах
-    }
+```mermaid
+graph TD
+    A[HTML/CSS - Каркас] --> B[GameState - Единый источник правды]
+    B --> C[Core - Игровая логика]
+    B --> D[UI - Отрисовка интерфейса]
+    C --> B
+    D --> B
     
-    /**
-     * Получить цену предмета (может быть переопределена)
-     * @returns {number} - Цена в провизии
-     */
-    getPrice() {
-        return this.basePrice;
-    }
-}
-
-// Делаем класс глобальным
-window.Item = Item;
-```
-
-**Почему так:** Базовый класс содержит общие для всех предметов поля: `id`, `name`, `type`, `rarity`, `price`. Метод `getPrice()` пока просто возвращает цену, но в будущем здесь можно добавить скидки или наценки.
-
-### Шаг 1.2. Класс Weapon (оружие)
-
-После базового класса (но до `window.Item`) добавьте:
-
-```javascript
-// ==============================
-// Класс оружия
-// ==============================
-class Weapon extends Item {
-    /**
-     * Создаёт новое оружие
-     * @param {string} id - Уникальный идентификатор
-     * @param {string} name - Название
-     * @param {string} rarity - Редкость
-     * @param {number} basePrice - Цена
-     * @param {Object} stats - Характеристики {damage, range, attackSpeed}
-     * @param {string} icon - Иконка
-     */
-    constructor(id, name, rarity, basePrice, stats, icon = '⚔️') {
-        super(id, name, 'weapon', rarity, basePrice, icon);
-        this.damage = stats.damage || 0;
-        this.range = stats.range || 1; // 1 - ближний бой, 2+ - дальний
-        this.attackSpeed = stats.attackSpeed || 1.0;
-        this.description = `Урон: ${this.damage}, Дальность: ${this.range}`;
-    }
-}
-```
-
-### Шаг 1.3. Класс Armor (броня)
-
-Добавьте после класса `Weapon`:
-
-```javascript
-// ==============================
-// Класс брони
-// ==============================
-class Armor extends Item {
-    /**
-     * Создаёт новую броню
-     * @param {string} id - Уникальный идентификатор
-     * @param {string} name - Название
-     * @param {string} rarity - Редкость
-     * @param {number} basePrice - Цена
-     * @param {Object} stats - Характеристики {defense, bonusHp}
-     * @param {string} icon - Иконка
-     */
-    constructor(id, name, rarity, basePrice, stats, icon = '🛡️') {
-        super(id, name, 'armor', rarity, basePrice, icon);
-        this.defense = stats.defense || 0;
-        this.bonusHp = stats.bonusHp || 0;
-        this.description = `Защита: ${this.defense}, HP: +${this.bonusHp}`;
-    }
-}
-```
-
-### Шаг 1.4. Класс Consumable (расходники)
-
-Добавьте после класса `Armor`:
-
-```javascript
-// ==============================
-// Класс расходника
-// ==============================
-class Consumable extends Item {
-    /**
-     * Создаёт новый расходник
-     * @param {string} id - Уникальный идентификатор
-     * @param {string} name - Название
-     * @param {string} rarity - Редкость
-     * @param {number} basePrice - Цена
-     * @param {string} effect - Эффект ('heal', 'buff', 'resource')
-     * @param {number} value - Сила эффекта
-     * @param {string} icon - Иконка
-     */
-    constructor(id, name, rarity, basePrice, effect, value, icon = '💗') {
-        super(id, name, 'consumable', rarity, basePrice, icon);
-        this.effect = effect;
-        this.value = value;
-        this.usableInBattle = true;
-        this.description = `${effect === 'heal' ? 'Восстанавливает' : 'Дает'} ${value}`;
-    }
-}
-```
-
-### Шаг 1.5. Класс Material (материалы для крафта)
-
-Добавьте в конце файла:
-
-```javascript
-// ==============================
-// Класс материала для крафта
-// ==============================
-class Material extends Item {
-    constructor(id, name, rarity, basePrice, icon = '🔨') {
-        super(id, name, 'material', rarity, basePrice, icon);
-        this.description = 'Используется для крафта';
-    }
-}
-
-// Делаем все классы глобальными
-window.Weapon = Weapon;
-window.Armor = Armor;
-window.Consumable = Consumable;
-window.Material = Material;
-```
-
----
-
-## 📁 Создаём новый файл `js/core/Shop.js`
-
-Это тоже новый файл. Создайте его в папке `core/`. Здесь будет класс магазина.
-
-### Шаг 2.1. Конструктор и инициализация
-
-Вставьте этот код в новый файл:
-
-```javascript
-// ==============================
-// Класс магазина
-// ==============================
-class Shop {
-    constructor() {
-        this.items = []; // Все доступные предметы
-        this.dailyItems = []; // Предметы в продаже сегодня
-        this.lastUpdate = Date.now();
-        
-        // Инициализируем базовый ассортимент
-        this.initializeShop();
-    }
+    subgraph Core [Ядро игры]
+        C1[Герои<br>Hero.js]
+        C2[Предметы<br>Item.js]
+        C3[Арена<br>Arena.js]
+        C4[Крафт<br>CraftSystem.js]
+    end
     
-    /**
-     * Инициализация всех предметов в магазине
-     */
-    initializeShop() {
-        // Создаём предметы
-        const items = [
-            // Оружие
-            new window.Weapon('weapon_sword_1', 'Деревянный меч', 'common', 10, { damage: 5, range: 1 }, '⚔️'),
-            new window.Weapon('weapon_sword_2', 'Железный меч', 'rare', 50, { damage: 12, range: 1 }, '⚔️'),
-            new window.Weapon('weapon_bow_1', 'Короткий лук', 'common', 15, { damage: 7, range: 3, attackSpeed: 0.8 }, '🏹'),
-            new window.Weapon('weapon_bow_2', 'Длинный лук', 'rare', 60, { damage: 15, range: 5, attackSpeed: 0.7 }, '🏹'),
-            
-            // Броня
-            new window.Armor('armor_cloth_1', 'Тканевая броня', 'common', 8, { defense: 3, bonusHp: 5 }, '👕'),
-            new window.Armor('armor_leather_1', 'Кожаная броня', 'common', 15, { defense: 5, bonusHp: 10 }, '👕'),
-            new window.Armor('armor_iron_1', 'Железный нагрудник', 'rare', 40, { defense: 10, bonusHp: 20 }, '👕'),
-            
-            // Расходники
-            new window.Consumable('consumable_hp_small', 'Малое зелье здоровья', 'common', 5, 'heal', 30, '💗'),
-            new window.Consumable('consumable_hp_medium', 'Среднее зелье здоровья', 'rare', 15, 'heal', 60, '💗'),
-            new window.Consumable('consumable_buff_attack', 'Зелье силы', 'rare', 20, 'buff', 20, '⚗️'),
-            
-            // Материалы
-            new window.Material('material_wood', 'Древесина', 'common', 2, '🏠'),
-            new window.Material('material_iron', 'Железо', 'common', 5, '⛓️'),
-            new window.Material('material_cloth', 'Ткань', 'common', 3, '🛡️')
-        ];
-        
-        this.items = items;
-        this.refreshDailyItems();
-    }
+    subgraph UI [Пользовательский интерфейс]
+        D1[UIManager<br>Управление экранами]
+        D2[Экран Героев]
+        D3[Экран Магазина]
+        D4[Экран Крафта]
+        D5[Модальные окна]
+    end
 ```
 
-### Шаг 2.2. Метод обновления ассортимента
+**Проще говоря:**
+- 🧠 **GameState** — мозг, хранит все данные.
+- ⚙️ **Core** — мышцы, управляет логикой (бой, крафт, расчёты).
+- 👁️ **UI** — лицо, показывает игру и ловит клики.
 
-Добавьте после `initializeShop()`:
+Никто не лезет в чужие дела. Core не знает про UI, UI только читает GameState.
 
-```javascript
-    /**
-     * Обновить ежедневный ассортимент (случайные 6 предметов)
-     */
-    refreshDailyItems() {
-        // Перемешиваем и берем 6 случайных предметов
-        const shuffled = [...this.items].sort(() => 0.5 - Math.random());
-        this.dailyItems = shuffled.slice(0, 6);
-        this.lastUpdate = Date.now();
-    }
+---
+
+## 📁 Структура проекта (живая и растущая)
+
+```
+arena-survivors/
+│
+├── 📄 index.html          # Точка входа (разметка, подключение скриптов)
+├── 🎨 style.css           # Стилизация (адаптив, темы, сетки)
+├── 📖 README.md           # Этот документ (навигатор по проекту)
+│
+├── 📁 js/
+│   ├── 🎮 game.js         # Главный файл (собирает всё воедино)
+│   │
+│   ├── 📁 core/           # Игровая логика (не знает о UI)
+│   │   ├── GameState.js    # Хранилище данных + пассивная генерация
+│   │   ├── Hero.js         # Класс героя (уровень, инвентарь, экипировка)
+│   │   ├── Item.js         # Предметы (оружие, броня, расходники, материалы)
+│   │   ├── Shop.js         # Магазин (ассортимент, покупки)
+│   │   ├── Arena.js        # [Скоро] Логика арены (бой, волны)
+│   │   └── CraftSystem.js  # [Скоро] Крафт и рецепты
+│   │
+│   └── 📁 ui/             # Интерфейс (только отрисовка и события)
+│       ├── UIManager.js     # Управление экранами, подписка на GameState
+│       └── ...              # Каждый экран будет жить здесь
+│
+└── 📁 assets/             # [Позже] Звуки, изображения, шрифты
+    ├── sounds/
+    └── sprites/
 ```
 
-### Шаг 2.3. Метод покупки предметов
+> 📌 **Правило иерархии подключения**: `GameState` → `Core` → `UI` → `game.js`.  
+> Нижние слои не знают о верхних.
 
-Добавьте после `refreshDailyItems()`:
+---
 
-```javascript
-    /**
-     * Купить предмет
-     * @param {string} itemId - ID предмета
-     * @param {string} heroId - ID героя, которому покупаем
-     * @returns {Object} - Результат операции {success, message, item}
-     */
-    buyItem(itemId, heroId) {
-        const item = this.dailyItems.find(i => i.id === itemId);
-        if (!item) return { success: false, message: 'Предмет не найден' };
-        
-        const price = item.getPrice();
-        const hero = window.GameState.heroes.find(h => h.id === heroId);
-        
-        // Проверяем, хватает ли провизии
-        if (window.GameState.resources.proviziya < price) {
-            return { success: false, message: 'Недостаточно провизии' };
-        }
-        
-        if (!hero) {
-            return { success: false, message: 'Герой не найден' };
-        }
-        
-        // Пытаемся добавить предмет в инвентарь героя
-        // Создаём копию предмета, чтобы не изменять оригинал в магазине
-        const itemCopy = { ...item };
-        const added = hero.addToInventory(itemCopy);
-        
-        if (!added) {
-            return { success: false, message: 'Инвентарь героя полон' };
-        }
-        
-        // Списываем ресурсы
-        window.GameState.updateResource('proviziya', -price);
-        
-        return { 
-            success: true, 
-            message: `Куплен ${item.name} за ${price} провизии`,
-            item: item
-        };
-    }
-```
+## 🧠 Игровая механика (как это будет работать)
 
-### Шаг 2.4. Метод проверки обновления магазина
+### 🎮 Герои (Hero)
+- У каждого героя есть **уровень, опыт и характеристики** (HP, атака, защита, скорость).
+- **Каждые 3 уровня** — выбор одного навыка из трёх случайных. Навык влияет на стиль игры.
+- Герои **пассивно генерируют ресурсы** (провизия, топливо, инструменты) — чем больше героев, тем быстрее копится валюта.
 
-Добавьте в конце файла:
+### ⚔️ Бой (Arena)
+- Запуск матча требует **1 единицу ресурса** (зависит от локации).
+- На арене игрок **выживает** определённое время, убегая и атакуя врагов.
+- Оружие ближнего боя — малый радиус, нет перезарядки. Дальнобойное — большой радиус, но требует перезарядки после каждого выстрела.
+- В бою можно **использовать расходники** из инвентаря.
+- После победы — **опыт, ресурсы, материалы**. Иногда — **новый рецепт**.
 
-```javascript
-    /**
-     * Проверить, нужно ли обновить ассортимент
-     * @returns {boolean} - true если ассортимент обновлён
-     */
-    checkAndRefresh() {
-        // Для теста делаем обновление каждые 30 секунд
-        const testInterval = 30 * 1000;
-        
-        if (Date.now() - this.lastUpdate > testInterval) {
-            this.refreshDailyItems();
-            return true;
-        }
-        return false;
-    }
+### 🏪 Магазин (Shop)
+- Покупка предметов за **провизию**.
+- Ассортимент обновляется (раз в день / раз в 30 секунд для теста).
+- Цвета редкости: обычный (белый), редкий (синий), эпический (фиолетовый), легендарный (золотой).
+
+### 🔨 Крафт (Craft)
+- Создание предметов из **материалов** (древесина, железо, ткань и т.д.).
+- Рецепты открываются за **получение навыков** героями или **редкие находки** в бою.
+- Каждый скрафченный предмет можно надеть на любого героя.
+
+### 💾 Сохранения
+- Весь прогресс хранится в **localStorage**.
+- Можно закрыть браузер, открыть снова — игра продолжится с того же места.
+
+---
+
+## 📱 Дизайн и адаптивность (никакого скролла страницы!)
+
+Мы строим игру как **единый экран**, где всё помещается без прокрутки всего окна.  
+Скроллятся только внутренние списки (герои, товары в магазине).
+
+**Ключевые моменты:**
+- `game-container` — флекс-колонка на всю высоту.
+- `game-screen` — `flex: 1`, внутри `position: relative`.
+- Все экраны переключаются через класс `active`.
+- Медиазапрос для мобильных: `< 600px` — шапка становится колонкой.
+
+```css
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Вся высота окна */
+    max-height: 100vh;
+    overflow: hidden; /* Никакого скролла страницы */
 }
 
-// Делаем класс глобальным
-window.Shop = Shop;
+.game-screen {
+    flex: 1;
+    overflow-y: auto; /* Скролл только внутри */
+}
 ```
 
 ---
 
-## 🔄 Обновляем `js/core/GameState.js`
+## 🗺️ План итераций (дорожная карта)
 
-Теперь добавим в хранилище поддержку магазина. Откройте `GameState.js`.
+Мы идём маленькими, но уверенными шагами. Каждая итерация — законченный функционал.
 
-### Шаг 3.1. Добавляем поле shop
+### ✅ **Итерация 1: Скелет и навигация**  
+*База, на которой всё держится*
+- [x] HTML-каркас (4 экрана: лобби, герои, магазин, крафт)
+- [x] Базовая стилизация (тёмная тема, сетки)
+- [x] Переключение экранов через нижнее меню
+- [x] Глобальный `GameState` с ресурсами
+- [x] Адаптивность (никаких скроллов страницы)
 
-Найдите в начале объекта `GameState` и добавьте новое поле:
+### ✅ **Итерация 2: Герои и пассивная генерация**  
+*Появляется душа игры*
+- [x] Класс `Hero` (уровень, опыт, инвентарь, экипировка)
+- [x] Экран героев с карточками и выбором активного героя
+- [x] Пассивная генерация ресурсов (каждый герой приносит +0.1/сек)
+- [x] Модальное окно инвентаря
+- [x] Тестовые расходники и их использование
 
-```javascript
-const GameState = {
-    resources: {
-        proviziya: 10,
-        toplivo: 5,
-        instrumenty: 3
-    },
-    heroes: [],
-    currentHeroId: null,
-    lastPassiveUpdate: Date.now(),
-    inventory: {
-        wood: 0,
-        metal: 0,
-        cloth: 0
-    },
-    // +++ НОВОЕ: магазин (пока null, будет инициализирован позже)
-    shop: null,
-    
-    _listeners: [],
-    // ... остальные методы
-```
+### ✅ **Итерация 3: Магазин и предметы**  
+*Экономика начинает работать*
+- [x] Иерархия классов предметов (`Item`, `Weapon`, `Armor`, `Consumable`, `Material`)
+- [x] Класс `Shop` с динамическим ассортиментом
+- [x] Покупка предметов за провизию
+- [x] Добавление купленных предметов в инвентарь героя
+- [x] Таймер обновления магазина (30 сек для теста)
 
-### Шаг 3.2. Добавляем метод initShop
+### 🔄 **Итерация 4: Крафт и рецепты** *(следующая)*
+- [ ] Система крафта (`CraftSystem.js`)
+- [ ] Экран крафта с доступными рецептами
+- [ ] Проверка материалов и создание предмета
+- [ ] Открытие новых рецептов (через навыки героев)
 
-Найдите место после метода `getCurrentHero()` и добавьте:
+### ⏳ **Итерация 5: Боевая система (MVP)**
+- [ ] Класс `Arena` (упрощённый бой: игрок vs 1 враг)
+- [ ] Экран битвы с таймером и кнопками атаки
+- [ ] Награды за победу (опыт, ресурсы, материалы)
 
-```javascript
-    /**
-     * Инициализирует магазин
-     */
-    initShop() {
-        this.shop = new window.Shop();
-        this.notify();
-    }
-```
+### ⏳ **Итерация 6: Навыки и прокачка**
+- [ ] Система навыков (выбор 1 из 3 при повышении уровня)
+- [ ] Влияние навыков на характеристики
+- [ ] Разблокировка новых героев за прохождение локаций
 
-### Шаг 3.3. Добавляем проверку обновления магазина в passiveUpdate
-
-Найдите метод `passiveUpdate()` и в конце, перед `this.notify()`, добавьте:
-
-```javascript
-    passiveUpdate() {
-        const now = Date.now();
-        const diffSeconds = Math.floor((now - this.lastPassiveUpdate) / 1000);
-        
-        if (diffSeconds >= 1) {
-            const resourcesGained = {
-                proviziya: 0,
-                toplivo: 0,
-                instrumenty: 0
-            };
-            
-            this.heroes.forEach(hero => {
-                if (hero.isUnlocked) {
-                    resourcesGained.proviziya += 0.05 * diffSeconds;
-                    resourcesGained.toplivo += 0.03 * diffSeconds;
-                    resourcesGained.instrumenty += 0.02 * diffSeconds;
-                }
-            });
-            
-            this.resources.proviziya = Math.round((this.resources.proviziya + resourcesGained.proviziya) * 10) / 10;
-            this.resources.toplivo = Math.round((this.resources.toplivo + resourcesGained.toplivo) * 10) / 10;
-            this.resources.instrumenty = Math.round((this.resources.instrumenty + resourcesGained.instrumenty) * 10) / 10;
-            
-            this.lastPassiveUpdate = now;
-            
-            // +++ НОВОЕ: проверяем обновление магазина
-            if (this.shop) {
-                const refreshed = this.shop.checkAndRefresh();
-                if (refreshed) {
-                    console.log('Ассортимент магазина обновлен!');
-                }
-            }
-            
-            this.notify();
-        }
-    }
-```
+### ⏳ **Итерация 7: Полировка и сохранения**
+- [ ] Сохранение/загрузка в `localStorage`
+- [ ] Звуки и простые CSS-анимации
+- [ ] Финальная настройка баланса
+- [ ] Рефакторинг (проверка SOLID)
 
 ---
 
-## 🎨 Обновляем `js/ui/UIManager.js`
+## 👥 Командная работа (как мы это делаем)
 
-Теперь добавим отрисовку магазина и улучшим отображение инвентаря.
+### Роли (можно меняться)
+- **🧙 Core-мастер** — пишет логику героев, предметов, боя.
+- **🎨 UI-художник** — создаёт экраны, стили, модальные окна.
+- **💾 State-менеджер** — отвечает за GameState, подписки, сохранения.
+- **🐛 Тестировщик** — ищет баги, проверяет крайние случаи.
 
-### Шаг 4.1. Добавляем вызов renderShop в конструктор
+### Процесс
+1. **Выбрали задачу** из плана итераций.
+2. **Создали ветку** `feature/название-фичи`.
+3. **Написали код** (комментируем сложные моменты).
+4. **Сделали код-ревью** — минимум один другой ученик проверяет.
+5. **Влили в `develop`** после апрува.
 
-Найдите конструктор и добавьте в конец:
-
-```javascript
-    constructor() {
-        this.screens = { ... };
-        this.navButtons = ...;
-        this.resourceElements = { ... };
-        
-        this.initEventListeners();
-        this.subscribeToState();
-        this.updateResourcesUI();
-        this.renderHeroes();
-        
-        // +++ НОВОЕ: если магазин уже инициализирован, отображаем товары
-        if (window.GameState.shop) {
-            this.renderShop();
-        }
-    }
-```
-
-### Шаг 4.2. Добавляем переключение на магазин в initEventListeners
-
-Найдите в `initEventListeners` обработчик клика и добавьте условие для магазина:
-
-```javascript
-    initEventListeners() {
-        this.navButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const screenId = e.target.dataset.screen;
-                this.showScreen(screenId);
-                this.setActiveNavButton(e.target);
-                
-                // +++ НОВОЕ: добавили проверку на магазин
-                if (screenId === 'heroes') {
-                    this.renderHeroes();
-                } else if (screenId === 'shop') {
-                    this.renderShop();
-                }
-            });
-        });
-        
-        document.querySelector('.close-modal').addEventListener('click', () => {
-            document.getElementById('heroModal').style.display = 'none';
-        });
-    }
-```
-
-### Шаг 4.3. Добавляем обновление магазина в subscribeToState
-
-Найдите метод `subscribeToState` и дополните:
-
-```javascript
-    subscribeToState() {
-        window.GameState.subscribe(() => {
-            this.updateResourcesUI();
-            
-            if (this.screens.heroes.classList.contains('active')) {
-                this.renderHeroes();
-            } 
-            // +++ НОВОЕ: обновляем магазин если он активен
-            else if (this.screens.shop.classList.contains('active')) {
-                this.renderShop();
-            }
-        });
-    }
-```
-
-### Шаг 4.4. Добавляем метод renderShop
-
-Это самый большой новый метод. Добавьте его после `renderHeroes()`:
-
-```javascript
-    /**
-     * Отрисовывает магазин
-     */
-    renderShop() {
-        const container = document.getElementById('shopItems');
-        container.innerHTML = '';
-        
-        if (!window.GameState.shop) {
-            container.innerHTML = '<p>Магазин не инициализирован</p>';
-            return;
-        }
-        
-        const currentHero = window.GameState.getCurrentHero();
-        if (!currentHero) {
-            container.innerHTML = '<p>Сначала выберите героя</p>';
-            return;
-        }
-        
-        window.GameState.shop.dailyItems.forEach(item => {
-            const itemCard = document.createElement('div');
-            itemCard.className = 'shop-item';
-            
-            // Определяем цвет редкости
-            let rarityColor = '#ffffff';
-            if (item.rarity === 'rare') rarityColor = '#4caaff';
-            if (item.rarity === 'epic') rarityColor = '#aa4cff';
-            if (item.rarity === 'legendary') rarityColor = '#ffaa4c';
-            
-            itemCard.innerHTML = `
-                <div style="font-size: 3rem;">${item.icon}</div>
-                <h3 style="color: ${rarityColor};">${item.name}</h3>
-                <p class="item-type">${item.type}</p>
-                <p class="item-description">${item.description}</p>
-                <p class="item-price">💰 ${item.getPrice()} провизии</p>
-                <p class="item-rarity" style="color: ${rarityColor};">${item.rarity}</p>
-                <button class="buy-item-btn" data-item-id="${item.id}">Купить</button>
-            `;
-            
-            container.appendChild(itemCard);
-        });
-        
-        // Добавляем обработчики покупки
-        document.querySelectorAll('.buy-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const itemId = e.target.dataset.itemId;
-                const currentHero = window.GameState.getCurrentHero();
-                
-                if (!currentHero) {
-                    alert('Сначала выберите героя!');
-                    return;
-                }
-                
-                const result = window.GameState.shop.buyItem(itemId, currentHero.id);
-                
-                if (result.success) {
-                    alert(result.message);
-                    this.renderShop(); // Обновляем магазин
-                } else {
-                    alert(result.message);
-                }
-            });
-        });
-        
-        // Добавляем информацию о времени обновления
-        const lastUpdate = new Date(window.GameState.shop.lastUpdate);
-        const nextUpdate = new Date(lastUpdate.getTime() + 30000); // +30 секунд для теста
-        
-        const shopInfo = document.createElement('div');
-        shopInfo.className = 'shop-info';
-        shopInfo.style.marginTop = '20px';
-        shopInfo.style.textAlign = 'center';
-        shopInfo.innerHTML = `
-            <p>🔄 Ассортимент обновится через: <span id="shopTimer"></span>с</p>
-        `;
-        container.appendChild(shopInfo);
-        
-        // Запускаем таймер обновления
-        this.startShopTimer();
-    }
-```
-
-### Шаг 4.5. Добавляем таймер для магазина
-
-Добавьте после `renderShop`:
-
-```javascript
-    /**
-     * Запускает таймер обновления магазина
-     */
-    startShopTimer() {
-        if (this.shopTimer) clearInterval(this.shopTimer);
-        
-        this.shopTimer = setInterval(() => {
-            const timerElement = document.querySelector('#shopTimer');
-            if (timerElement) {
-                const lastUpdate = window.GameState.shop.lastUpdate;
-                const timeLeft = Math.max(0, 30 - Math.floor((Date.now() - lastUpdate) / 1000));
-                timerElement.textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    this.renderShop(); // Перерисовываем при обновлении
-                }
-            }
-        }, 1000);
-    }
-```
-
-### Шаг 4.6. Улучшаем отображение инвентаря
-
-Найдите метод `showHeroInventory` и замените его на этот (добавляются иконки и кнопки использования):
-
-```javascript
-    /**
-     * Показывает инвентарь героя в модальном окне
-     * @param {string} heroId - ID героя
-     */
-    showHeroInventory(heroId) {
-        const hero = window.GameState.heroes.find(h => h.id === heroId);
-        if (!hero) return;
-        
-        const modalBody = document.getElementById('modalBody');
-        modalBody.innerHTML = `
-            <h2>Инвентарь ${hero.name}</h2>
-            <div class="inventory-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
-                ${hero.inventory.map((item, index) => {
-                    if (item) {
-                        return `<div class="inventory-slot" data-slot="${index}" style="background: #0f3460; padding: 15px; border-radius: 5px; text-align: center;">
-                            <div style="font-size: 2rem;">${item.icon}</div>
-                            <div>${item.name}</div>
-                            ${item.type === 'consumable' ? '<button class="use-item-btn" data-hero-id="' + heroId + '" data-slot="' + index + '">Использовать</button>' : ''}
-                        </div>`;
-                    } else {
-                        return `<div class="inventory-slot empty" data-slot="${index}" style="background: #1a1a2e; padding: 15px; border-radius: 5px; border: 1px dashed #0f3460; text-align: center;">
-                            Пусто
-                        </div>`;
-                    }
-                }).join('')}
-            </div>
-            <h3>Экипировка</h3>
-            <div class="equipment-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
-                <div class="equipment-slot" style="background: #0f3460; padding: 10px; border-radius: 5px;">
-                    <strong>Оружие:</strong><br>
-                    ${hero.equipment.weapon ? hero.equipment.weapon.name : 'Пусто'}
-                </div>
-                <div class="equipment-slot" style="background: #0f3460; padding: 10px; border-radius: 5px;">
-                    <strong>Броня:</strong><br>
-                    ${hero.equipment.armor ? hero.equipment.armor.name : 'Пусто'}
-                </div>
-                <div class="equipment-slot" style="background: #0f3460; padding: 10px; border-radius: 5px;">
-                    <strong>Аксессуар:</strong><br>
-                    ${hero.equipment.accessory ? hero.equipment.accessory.name : 'Пусто'}
-                </div>
-            </div>
-        `;
-        
-        // Добавляем обработчики для использования расходников
-        document.querySelectorAll('.use-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const heroId = e.target.dataset.heroId;
-                const slot = parseInt(e.target.dataset.slot);
-                const hero = window.GameState.heroes.find(h => h.id === heroId);
-                
-                if (hero && hero.useConsumable(slot)) {
-                    alert('Предмет использован!');
-                    this.showHeroInventory(heroId); // Обновляем отображение
-                } else {
-                    alert('Нельзя использовать этот предмет сейчас');
-                }
-            });
-        });
-        
-        document.getElementById('heroModal').style.display = 'block';
-    }
-```
+### Code Style
+- Классы — с большой буквы (`Hero`, `UIManager`).
+- Методы — глаголы с маленькой буквы (`attack()`, `renderHeroes()`).
+- Комментарии — JSDoc для публичных методов.
 
 ---
 
-## 🚀 Обновляем `js/game.js`
+## 🎯 Задания для самостоятельной работы
 
-В файле запуска нужно заменить создание предметов на использование новых классов.
+*Эти задачи не входят в основной план, но делают игру интереснее. Бери любую!*
 
-### Шаг 5.1. Заменяем создание предметов
+### 🌱 Новичок
+1. **Счётчик времени** — покажи текущее время в шапке.
+2. **Случайный цвет карточек** — лёгкий оттенок у каждого героя.
+3. **Звук клика** — добавь `new Audio()` при нажатии кнопок.
 
-Найдите место, где добавляются предметы в инвентарь воина, и замените на:
+### 🌿 Продолжающий
+4. **Система достижений** — модуль `Achievements.js`, следит за событиями (накопил 100 ресурсов) и выдаёт награды.
+5. **Дневная/ночная тема** — кнопка в шапке, переключает CSS-переменные.
+6. **Сортировка инвентаря** — кнопки "По типу" / "По редкости".
 
-```javascript
-// Добавляем тестовые предметы в инвентарь
-warrior.addToInventory(new window.Consumable('consumable_hp_small', 'Малое зелье здоровья', 'common', 5, 'heal', 30, '🧪'));
-warrior.addToInventory(new window.Weapon('weapon_sword_1', 'Деревянный меч', 'common', 10, { damage: 5, range: 1 }, '⚔️'));
-```
-
-### Шаг 5.2. Добавляем инициализацию магазина
-
-После выбора героя добавьте:
-
-```javascript
-// Автоматически выбираем первого героя
-window.GameState.selectHero('1');
-
-// +++ НОВОЕ: инициализируем магазин
-window.GameState.initShop();
-```
-
-### Шаг 5.3. Улучшаем обработчик начала боя (добавляем опыт)
-
-Найдите обработчик `start-match-btn` и замените на этот (добавлена выдача опыта):
-
-```javascript
-// Обработчики кнопок локаций
-document.querySelectorAll('.start-match-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const costType = e.target.dataset.costType;
-        
-        if (!window.GameState.getCurrentHero()) {
-            alert('Сначала выберите героя в меню "Герои"!');
-            return;
-        }
-        
-        if (window.GameState.resources[costType] < 1) {
-            alert(`Не хватает ${costType}!`);
-            return;
-        }
-        
-        window.GameState.updateResource(costType, -1);
-        
-        // +++ НОВОЕ: даем немного опыта за матч
-        const currentHero = window.GameState.getCurrentHero();
-        currentHero.addExp(10);
-        
-        alert(`Матч начат с героем ${currentHero.name}! Потрачен 1 ${costType}. Получено 10 опыта.`);
-    });
-});
-```
-
-### Шаг 5.4. Обновляем сообщение в консоли
-
-В конце файла замените `console.log`:
-
-```javascript
-console.log('Игра запущена! Магазин инициализирован.');
-```
+### 🌳 Продвинутый
+7. **Ежедневные задания** — "Проведи 3 матча в лесу", получи бонус.
+8. **График прогресса** — Canvas с ростом уровня героя.
+9. **Свои рецепты** — возможность комбинировать предметы и создавать новые рецепты.
 
 ---
 
-## 📝 Обновляем `index.html`
+## 🎉 Напутствие
 
-В самом конце файла, в блоке подключения скриптов, добавьте новые строки для `Item.js` и `Shop.js`. **Важен порядок:**
+Этот проект — **ваше портфолио**. Каждая строчка кода, каждая закрытая итерация — это шаг к уровню Junior Developer.
 
-```html
-<script src="js/core/GameState.js"></script> 
-<script src="js/core/Item.js"></script>      <!-- НОВОЕ: сначала Item (базовый класс) -->
-<script src="js/core/Hero.js"></script>
-<script src="js/core/Shop.js"></script>      <!-- НОВОЕ: потом Shop (использует Item) -->
-<script src="js/ui/UIManager.js"></script> 
-<script src="js/game.js"></script>
-```
+**Помните:**
+- Не бойтесь ошибаться. Ошибки — лучший учитель.
+- Если что-то непонятно — спросите наставника или товарища.
+- Хотите добавить свою фичу? Создайте ветку и попробуйте!
 
-**Почему такой порядок:**
-1. `GameState` — должен быть самым первым
-2. `Item.js` — базовые классы предметов
-3. `Hero.js` — герои используют предметы
-4. `Shop.js` — магазин создаёт предметы
-5. `UIManager.js` — отрисовывает интерфейс
-6. `game.js` — запускает всё
+Давайте создадим игру, в которую будет интересно играть, и код, который не стыдно показать на собеседовании. 🚀
 
 ---
 
-## ✅ Что мы добавили
-
-| Файл | Что нового |
-|------|------------|
-| `Item.js` (новый) | Система классов предметов (Item, Weapon, Armor, Consumable, Material) |
-| `Shop.js` (новый) | Магазин с ассортиментом и покупками |
-| `GameState.js` | Поле `shop`, метод `initShop()`, проверка обновления магазина |
-| `UIManager.js` | Метод `renderShop()`, таймер обновления, кнопки использования расходников |
-| `game.js` | Создание предметов через классы, инициализация магазина, выдача опыта |
-| `index.html` | Подключение двух новых файлов |
-
----
-
-## 🧪 Как проверить, что всё работает
-
-1. **Откройте экран Магазин** — должны увидеть 6 случайных предметов
-2. **Цвета редкости** — обычные (белые), редкие (синие), эпические (фиолетовые)
-3. **Купите предмет** — если хватает провизии, предмет появится в инвентаре героя
-4. **Подождите 30 секунд** — ассортимент должен обновиться, таймер покажет обратный отсчёт
-5. **Откройте инвентарь героя** — у зелий появилась кнопка "Использовать"
-6. **Используйте зелье** — HP героя должно увеличиться
-7. **Проведите бой** — герой получит 10 опыта (проверьте полоску опыта)
-
----
-
-## ⁉️ Задания для самостоятельной работы
-
-Выберите **одно** задание, которое улучшит код без добавления новых механик:
-
-### 🔹 Задание 1. Добавить проверку цены в getPrice()
-Сейчас метод `getPrice()` просто возвращает `basePrice`. Добавьте модификатор редкости: 
-- common = x1
-- rare = x1.5
-- epic = x2
-- legendary = x3
-
-**Где:** `Item.js`, метод `getPrice()`
-
----
-
-### 🔹 Задание 2. Добавить иконки для пустых слотов
-В инвентаре пустые слоты показывают только текст "Пусто". Сделайте, чтобы они показывали иконку 📭 и были чуть прозрачнее.
-
-**Где:** `UIManager.js`, метод `showHeroInventory()`, строка с `'Пусто'`
-
----
-
-### 🔹 Задание 3. Добавить проверку на наличие денег в UI
-Сейчас кнопка "Купить" активна всегда, даже если не хватает провизии. Добавьте проверку: если у игрока меньше денег, чем цена предмета, кнопка должна становиться серой и неактивной (`disabled`).
-
-**Где:** `UIManager.js`, метод `renderShop()`, при создании кнопки
-
----
-
-### 🔹 Задание 4. Добавить счетчик свободных слотов в инвентаре
-В модальном окне инвентаря добавьте строку: "Свободно: X/9 слотов". Это поможет игроку понять, может ли он купить новый предмет.
-
-**Где:** `UIManager.js`, метод `showHeroInventory()`, в начало `modalBody.innerHTML`
-
----
-
-### 🔹 Задание 5. Индикатор выбора героя
-Добавить индикатор выбранного героя или аватар в шапке с рессурсами.
-
-**Где:** В `header` добавить `div` с иконкой, в методе выбора героя меняйте аватар на соответствующий герою.
-
----
-
-### 🔹 Задание 6. Улучшить описание предметов
-Сейчас у оружия и брони нет описания бонусных статов. Добавьте в конструктор `Weapon` и `Armor` параметр `bonusStats` и выводите его в `description`.
-
-**Где:** `Item.js`, классы `Weapon` и `Armor`
-
----
-
-### 🎯 Как выполнять
-
-1. Выберите одно задание
-2. Внесенные изменения пометьте коментариями.
-3. Внесите изменения (буквально 3-10 строк кода)
-4. Сделайте commit и push
-5. В комментариях к домашнему заданию укажите улучшение.
-
-<br>
-
-> [!TIP]
-> Тестируем - должен работать магазин при переходе по вкладке, там должны отображаться товары, таймер в магазине должен работать корректно, инвентарь должен отображать купленные предметы.  **Переходим к версии 0.0.4 в следующую ветку**
-#   S u r v i v o r - g a m e  
- 
+<div align="center">
+  <sub>Сделано с ❤️ для учеников, которые хотят стать настоящими разработчиками</sub>
+  <br>
+  <sub>📍 Актуальная версия: <strong>Итерация 3 (Магазин и предметы)</strong></sub>
+</div>
